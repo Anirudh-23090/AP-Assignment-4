@@ -48,7 +48,10 @@ public class Customer {
     public void modify(String name, int quantity) {
         Item E = menu.get(name);
         if (E != null && E.getStatus().equals("Available")) {
-            cart.modify(name, quantity);
+            if (quantity >= 0)
+                cart.modify(name, quantity);
+            else
+                System.out.println("Invalid quantity");
         } else {
             cart.remove(name);
         }
@@ -86,6 +89,10 @@ public class Customer {
                 return;
             }
         }
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     public void orderHistory() {

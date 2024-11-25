@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 public class Order {
     private static int counter = 0;
@@ -20,17 +21,21 @@ public class Order {
     }
 
     /*
-    Stages of a Order
-    Order Received
-    Preparing
-    Out for Delivery
-    Delivered
-    Denied
-    Cancelled
+    Stages of order
+    1) Order Received
+    2) Preparing
+    3) Out for Delivery
+    4) Delivered
+    5) Denied
+    6) Cancelled
     */
 
     public Cart getCart() {
         return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     public Customer getCustomer() {
@@ -91,8 +96,12 @@ public class Order {
         }
     }
 
+    public Set<String> getItems() {
+        return cart.getItems();
+    }
+
     @Override
     public String toString() {
-        return "OrderID " + orderID + " Order Status " + status + " Date " + date + " Customer " + customer.getType() + " " + customer.getName() + "\n" + cart;
+        return "OrderID " + orderID + " Order Status " + status + " Date " + date + " Customer " + customer.getType() + " " + customer.getName() + "\n" + cart + "\n";
     }
 }

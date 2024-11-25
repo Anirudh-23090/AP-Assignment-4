@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.*;
 
 public class ByteMe {
@@ -13,6 +14,8 @@ public class ByteMe {
     private MenuManagement menuManagement;
     private OrderManagement orderManagement;
     private BrowseMenu browseMenu;
+    private PrintWriter out;
+    private PrintWriter new_out;
 
     public ByteMe() {
         menu = new Menu();
@@ -25,30 +28,76 @@ public class ByteMe {
         sales = 0; orderCnt = 0;
     }
 
+    public HashMap<String, String> getUserData() throws IOException {
+        // Retrieving the data to verify customer login
+        HashMap<String, String> userData = new HashMap<String, String>();
+        try (BufferedReader in = new BufferedReader(new FileReader("OrderHistories.txt"))) {
+            String l, m;
+            while ((l = in.readLine()) != null) { // IOException
+                m = in.readLine();
+                userData.put(l, m);
+            }
+        }
+        return userData;
+    }
+
     public void run() {
         System.out.println("Welcome to ByteMe");
+        HashMap<String, String> userData = new HashMap<>();
+        try {
+            userData = getUserData();
+        } catch (IOException E) {
+            System.out.println("IOException");
+        }
+        try {
+            out = new PrintWriter(new FileWriter("OrderHistories.txt", true));
+        } catch (IOException E) {
+            System.out.println("IOException");
+        }
+        try {
+            new_out = new PrintWriter(new FileWriter("UserData.txt", true));
+        } catch (IOException E) {
+            System.out.println("IOException");
+        }
         System.out.println("Do you want to enter the system? [Y/N]");
         input = read.nextLine();
         while (input.equalsIgnoreCase("Y")) {
             System.out.println("Already have an account? [Y/N]");
             input = read.nextLine();
             if (input.equalsIgnoreCase("N"))
-                SignIn();
+                SignIn(userData);
             else if (input.equalsIgnoreCase("Y"))
-                LogIn();
+                LogIn(userData);
             System.out.println("Do you want to continue? [Y/N]");
             input = read.nextLine();
         }
+        if (new_out != null) {
+            new_out.close();
+        }
+        if (out != null) {
+            out.close();
+        }
     }
 
-    private void SignIn() {
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public LinkedList<Order> getOrders() {
+        return orders;
+    }
+
+    private void SignIn(HashMap<String, String> userData) {
         System.out.println("Sign-in as [Regular/VIP]");
         input = read.nextLine();
         if (input.equalsIgnoreCase("Regular")) {
             System.out.println("Enter your name");
             String name = read.nextLine();
+            new_out.println(name);
             System.out.println("Enter your Password");
             String password = read.nextLine();
+            new_out.println(password);
+            userData.put(name, password);
             Customer customer = new Customer(name, password, "Regular", menu);
             customers.put(name, customer);
             System.out.println("Successfully registered as Regular Customer");
@@ -60,6 +109,9 @@ public class ByteMe {
             System.out.println("Confirm subscription by typing Pay");
             input = read.nextLine();
             if (input.equals("Pay")) {
+                new_out.println(name);
+                new_out.println(password);
+                userData.put(name, password);
                 Customer customer = new Customer(name, password, "VIP", menu);
                 customers.put(name, customer);
                 System.out.println("Successfully registered as VIP Customer");
@@ -69,24 +121,27 @@ public class ByteMe {
         }
     }
 
-    private void LogIn() {
+    private void LogIn(HashMap<String, String> userData) {
         System.out.println("Log-in as [Customer/Admin]");
         input = read.nextLine();
         if (input.equalsIgnoreCase("Customer")) {
-            CustomerLogIn();
+            CustomerLogIn(userData);
         } else if (input.equalsIgnoreCase("Admin")) {
             AdminLogIn();
         }
     }
 
-    private void CustomerLogIn() {
+    public void CustomerLogIn(HashMap<String, String> userData) {
         System.out.println("Enter your Name");
         String name = read.nextLine();
         System.out.println("Enter your Password");
         String password = read.nextLine();
         Customer customer = customers.get(name);
-        if (password.equals(customer.getPassword())) {
+
+        if (userData.containsKey(name) && userData.get(name).equals(password)) {
             CustomerInterface(customer);
+        } else if (!userData.containsKey(name)) {
+            System.out.println("User doesn't exist");
         } else {
             System.out.println("Invalid Password");
         }
@@ -217,7 +272,7 @@ public class ByteMe {
         checkout(customer);
     }
 
-    private void checkout(Customer customer) {
+    public void checkout(Customer customer) { // Made public for Testing
         Order order = new Order(customer, date);
         System.out.println("Enter special request");
         input = read.nextLine();
@@ -239,6 +294,7 @@ public class ByteMe {
                 }
             }
             insert(order);
+            out.println(order);
             customer.add(order);
         } else {
             System.out.println("Order is Invalid");
@@ -247,7 +303,7 @@ public class ByteMe {
 
     private boolean validate(Order order) {
         for (String item : order.getCart().getItems()) {
-            if (!menu.contains(item)) {
+            if (!menu.contains(item) || menu.get(item).getStatus().equals("Unavailable")) { // Assumption changed
                 return false;
             }
         }
@@ -407,5 +463,9 @@ public class ByteMe {
         }
         sales = 0;
         orderCnt = 0;
+    }
+
+    public void setRead(Scanner scanner) {
+        read = scanner;
     }
 }

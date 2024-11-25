@@ -30,8 +30,6 @@ public class MenuManagement {
     }
 
     public void remove(String name) {
-        // code to remove item e
-        menu.remove(name);
         // change status of the 'pending' orders with this item as 'denied'
         for (Order order : orders) {
             String status = order.getStatus();
@@ -46,5 +44,7 @@ public class MenuManagement {
                 System.out.println("Removed " + name + " " + customer.getType() + " " + customer.getName());
             }
         }
+        // code to remove item e
+        menu.remove(name); // TODO Assignment 3: Shift the placement of the block
     }
 }
