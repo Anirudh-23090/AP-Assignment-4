@@ -294,7 +294,7 @@ public class ByteMe {
                 }
             }
             insert(order);
-            out.println(order);
+            out.println("OrderID " + order.getOrderID() + " Date " + date + " Customer " + customer.getType() + " " + customer.getName() + "\n" + order.getCart() + "\n");
             customer.add(order);
         } else {
             System.out.println("Order is Invalid");

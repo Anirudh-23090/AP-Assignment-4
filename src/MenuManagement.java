@@ -45,6 +45,6 @@ public class MenuManagement {
             }
         }
         // code to remove item e
-        menu.remove(name); // TODO Assignment 3: Shift the placement of the block
+        menu.remove(name);
     }
 }

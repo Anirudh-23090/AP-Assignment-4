@@ -102,6 +102,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return "OrderID " + orderID + " Order Status " + status + " Date " + date + " Customer " + customer.getType() + " " + customer.getName() + "\n" + cart + "\n";
+        return "OrderID " + orderID + " Order Status " + status + " Date " + date + " Customer " + customer.getType() + " " + customer.getName() + "\n" + cart;
     }
 }

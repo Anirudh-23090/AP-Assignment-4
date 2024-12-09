@@ -15,6 +15,11 @@ public class Cart {
     public Cart(Cart cart) {
         total = cart.getTotal();
         cnt = cart.getCnt();
+        menu = cart.getMenu();
+    }
+
+    public Menu getMenu() {
+        return menu;
     }
 
     public boolean contains(String name) {

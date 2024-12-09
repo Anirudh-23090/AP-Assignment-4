@@ -32,7 +32,6 @@ public class JUnitTest {
         try {
             System.setOut(new PrintStream(stream));
             System.setIn(new ByteArrayInputStream(input.getBytes()));
-
             BM.setRead(new Scanner(System.in));
             BM.CustomerLogIn(userData);
         } finally {
